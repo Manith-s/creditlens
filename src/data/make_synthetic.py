@@ -20,6 +20,7 @@ import pandas as pd
 
 from src.config import CFG, rel_to_root, set_global_seed
 
+
 # ---------------------------------------------------------------------------
 # Home Credit Default Risk  (anchor for the credit scorecard)
 #   real application_train: 307,511 rows x 122 cols, TARGET ~8% positive.
