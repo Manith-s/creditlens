@@ -1,0 +1,45 @@
+# =============================================================================
+# ds-rag environment  (Workstream 3: agentic RAG policy assistant)
+# Kept SEPARATE from ds-ml on purpose: the RAG stack pulls heavy transitive
+# deps that conflict with the Spark/ML resolver. The two envs talk through
+# files (Parquet/CSV) and the MLflow server -- exactly how real teams split
+# data-plane and control-plane concerns.
+#
+#   python -m venv .venv-rag && source .venv-rag/bin/activate
+#   pip install -r requirements-rag.txt
+#
+# Requires the Ollama runtime (v0.30.10+) running locally:
+#   ollama serve
+#   ollama pull llama3.1:8b
+#   ollama pull nomic-embed-text
+# =============================================================================
+
+# --- orchestration / retrieval ---
+llama-index-core==0.14.22
+llama-index-llms-ollama>=0.4
+llama-index-embeddings-ollama>=0.4
+llama-index-vector-stores-chroma>=0.4
+langchain==1.3.11
+langgraph==1.2.6
+
+# --- vector store ---
+chromadb==1.5.9         # Python >=3.9. NOTE: DB migrations are irreversible.
+
+# --- LLM client ---
+ollama>=0.4             # python client; runtime app installed separately
+
+# --- evaluation ---
+ragas==0.4.3
+datasets>=2.20          # RAGAS dataset wrapper
+
+# --- document loading ---
+pypdf>=4.2              # PDF ingestion
+beautifulsoup4>=4.12    # HTML policy pages
+
+# --- shared utils ---
+pandas>=2.2
+python-dotenv>=1.0
+tqdm>=4.66
+
+# --- dev / test ---
+pytest>=8.2

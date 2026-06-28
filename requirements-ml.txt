@@ -1,0 +1,56 @@
+# =============================================================================
+# ds-ml environment  (Workstreams 1 & 2: credit scoring + fraud detection)
+# Python 3.12 recommended. Versions pinned per blueprint (current as of mid-2026).
+# Re-check PyPI before a fresh build; the ML stack moves fast.
+#
+#   python -m venv .venv-ml && source .venv-ml/bin/activate   (Linux/macOS)
+#   py -3.12 -m venv .venv-ml  &&  .venv-ml\Scripts\activate   (Windows)
+#   pip install -r requirements-ml.txt
+#
+# CPU-only torch:  pip install torch==2.12.1 --index-url https://download.pytorch.org/whl/cpu
+# CPU-only xgboost: pip install xgboost-cpu==3.3.0   (instead of xgboost)
+# =============================================================================
+
+# --- core scientific stack ---
+numpy>=1.26
+pandas>=2.2
+scipy>=1.13
+pyarrow>=16.0           # Parquet I/O for Spark <-> Pandas handoff
+
+# --- classical ML ---
+scikit-learn==1.9.0     # Python >=3.11
+xgboost==3.3.0          # Python >=3.12  (use xgboost-cpu for CPU-only build)
+lightgbm==4.6.0         # macOS needs `brew install libomp`
+imbalanced-learn>=0.13  # leakage-safe SMOTE pipelines
+
+# --- scorecard / WOE-IV ---
+optbinning==0.21.0      # primary scorecard library (WOE/IV + PDO scaling)
+# scorecardpy==0.1.9.7  # OPTIONAL cross-check only; lightly maintained (~2023). Uncomment if desired.
+
+# --- deep learning (small CPU nets) ---
+torch==2.12.1           # CPU wheel: see header
+tensorflow==2.21.0      # bundles Keras 3
+keras==3.15.0
+
+# --- explainability ---
+shap==0.52.0            # Python >=3.12
+
+# --- experiment tracking / registry / serving ---
+mlflow==3.14.0
+fastapi>=0.115          # used by `mlflow models serve`
+uvicorn>=0.30
+
+# --- big-data feature engineering ---
+pyspark>=4.0.1          # needs Java 17+ with JAVA_HOME set (4.0.1 fixes SPARK-52259)
+
+# --- plotting / reporting ---
+matplotlib>=3.9
+seaborn>=0.13
+
+# --- data acquisition ---
+kaggle>=1.6             # `kaggle competitions download ...`
+
+# --- dev / test / quality ---
+pytest>=8.2
+pytest-cov>=5.0
+ruff>=0.6

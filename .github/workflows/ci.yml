@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install minimal test deps
+        # The fast suite needs only the lightweight core — not Spark/torch/TF or the
+        # RAG stack. Heavy/integration deps are exercised locally and in nightly runs.
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas pyarrow scikit-learn imbalanced-learn pytest pytest-cov ruff
+          pip install -e .
+
+      - name: Lint
+        run: ruff check src tests
+
+      - name: Run fast tests (no Spark / Ollama / GPU)
+        run: pytest -m "not slow and not spark and not rag" --cov=src --cov-report=term-missing
+
+  rag-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install core + offline RAG deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas pyarrow pytest pypdf
+          pip install -e .
+      - name: RAG smoke tests (offline fallback — no Ollama)
+        run: pytest tests/test_rag.py -v

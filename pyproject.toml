@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "creditlens"
+version = "0.1.0"
+description = "Local, end-to-end credit-risk scoring, fraud detection, and agentic RAG portfolio (CPU-first, $0)."
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+license = { text = "MIT" }
+authors = [{ name = "Manith" }]
+keywords = ["credit-risk", "fraud-detection", "rag", "mlflow", "pyspark", "scorecard"]
+
+# Dependencies are managed via requirements-ml.txt and requirements-rag.txt
+# (two separate environments). This block lists only the lightweight shared core
+# so `pip install -e .` works for importing the `creditlens` package in either env.
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "pyarrow>=16.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2", "pytest-cov>=5.0", "ruff>=0.6"]
+
+[project.urls]
+Repository = "https://github.com/your-handle/creditlens"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --color=yes"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "spark: requires a working PySpark/Java install",
+    "rag: requires the ds-rag env and a running Ollama",
+]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+ignore = ["E501", "B905"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/conftest.py" = ["E402", "I001"]
